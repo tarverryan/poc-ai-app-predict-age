@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+.env
+.venv
+venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Cursor specific
+.cursor/
+!.cursor/rules/
+!.cursor/rules/*.mdc
+.cursorrules.local
+
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/tfplan
+terraform/*.tfstate
+terraform/*.tfstate.backup
+terraform/terraform.tfvars
+
+# Lambda deployment packages
+lambda-predict-age/**/deployment.zip
+
+# Test outputs and temp files
+agent_test_*.json
+agent_test_*.log
+test_results_*.json
+*.tmp

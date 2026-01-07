@@ -1,0 +1,86 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Scripts
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Documentation
+*.md text diff=markdown
+*.txt text
+*.rst text
+
+# Configuration files
+*.yml text
+*.yaml text
+*.json text
+*.toml text
+*.ini text
+*.cfg text
+*.conf text
+
+# Source code
+*.js text
+*.ts text
+*.jsx text
+*.tsx text
+*.py text
+*.java text
+*.c text
+*.cpp text
+*.h text
+*.hpp text
+*.go text
+*.rs text
+*.php text
+*.rb text
+*.pl text
+*.sh text
+*.bash text
+*.zsh text
+*.fish text
+
+# Web files
+*.html text diff=html
+*.css text diff=css
+*.scss text diff=css
+*.sass text diff=css
+*.xml text
+*.svg text
+
+# Data files
+*.csv text
+*.tsv text
+*.sql text
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.tar.gz binary
+*.exe binary
+*.dll binary
+*.so binary
+*.dylib binary
+
+# Archives
+*.7z binary
+*.bz2 binary
+*.gz binary
+*.rar binary
+*.tar binary
+*.xz binary
+
+# Fonts
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary
+
+# Cursor rules files
+*.mdc text
+.cursorrules text
