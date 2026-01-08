@@ -18,6 +18,8 @@ This is a **public learning project** created to share architectural decisions a
 
 The goal is to provide a reference implementation that other builders can learn from, adapt, and improve upon.
 
+Feedback, alternative designs, and questions are welcome via issues or discussions.
+
 ## Who This Is For
 
 This project is designed for builders who want to learn:
@@ -275,3 +277,5 @@ AWS enthusiast and ML engineer passionate about serverless architectures, cost o
 **Version:** 1.0  
 **Last Updated:** January 2025  
 **License:** MIT
+
+This project prioritizes clarity and learning over exhaustive production hardening.
