@@ -268,7 +268,6 @@ For detailed setup instructions, see [CONTRIBUTING.md](CONTRIBUTING.md).
 AWS enthusiast and ML engineer passionate about serverless architectures, cost optimization, and building scalable ML systems. This project was created as a learning exercise and shared publicly for the AWS community.
 
 - **GitHub:** [@tarverryan](https://github.com/tarverryan)
-- **Email:** rytahub@gmail.com
 
 ---
 

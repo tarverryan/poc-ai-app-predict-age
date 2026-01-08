@@ -27,7 +27,6 @@ This project demonstrates:
 ### Connect
 
 - **GitHub:** [@tarverryan](https://github.com/tarverryan)
-- **Email:** rytahub@gmail.com
 
 ### Topics of Interest
 
