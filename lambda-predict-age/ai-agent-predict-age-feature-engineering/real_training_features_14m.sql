@@ -8,53 +8,53 @@ WITH (
 ) AS
 WITH base_features AS (
 SELECT
-    pid,
+    id,
     CASE 
-        WHEN job_start_date IS NOT NULL AND LENGTH(TRIM(job_start_date)) >= 7 THEN
+        WHEN position_start_date IS NOT NULL AND LENGTH(TRIM(position_start_date)) >= 7 THEN
             date_diff('month',
                 date_parse(
                     CASE 
-                        WHEN LENGTH(TRIM(job_start_date)) = 7 THEN CONCAT(TRIM(job_start_date), '-01')
-                        WHEN LENGTH(TRIM(job_start_date)) >= 10 THEN TRIM(job_start_date)
+                        WHEN LENGTH(TRIM(position_start_date)) = 7 THEN CONCAT(TRIM(position_start_date), '-01')
+                        WHEN LENGTH(TRIM(position_start_date)) >= 10 THEN TRIM(position_start_date)
                         ELSE NULL
                     END,
                     '%Y-%m-%d'
                 ),
                 current_date
             )
-        WHEN job_level = 'C-Team' THEN 120
-        WHEN job_level = 'Manager' THEN 60
+        WHEN position_level = 'C-Team' THEN 120
+        WHEN position_level = 'Manager' THEN 60
         ELSE 36
     END as tenure_months,
-    job_level,
-    job_title,
+    position_level,
+    position_title,
     compensation_range,
-    employee_range,
-    linkedin_connection_count,
-    ev_last_date,
-    linkedin_url_is_valid,
-    facebook_url,
-    twitter_url,
+    organization_size_range,
+    professional_network_connection_count,
+    employment_end_date,
+    professional_network_url_is_valid,
+    social_media_url_1,
+    social_media_url_2,
     work_email,
     personal_email,
-    industry,
-    job_function,
-    revenue_range,
+    organization_industry,
+    position_function,
+    organization_revenue_range,
     education_level,
     graduation_year,
     number_of_jobs,
     skill_count,
     birth_year,
     approximate_age
-FROM ${DATABASE_NAME}.predict_age_staging_parsed_features_2025q3
-WHERE pid IS NOT NULL
-  AND MOD(CAST(pid AS BIGINT), 10) = 0  -- 10% sample for training
+FROM ${DATABASE_NAME}.predict_age_staging_parsed_features_${YYYYQQ}
+WHERE id IS NOT NULL
+  AND MOD(CAST(id AS BIGINT), 10) = 0  -- 10% sample for training
   AND (birth_year IS NOT NULL OR approximate_age IS NOT NULL)
 )
 SELECT 
-    pid,
+    id,
     tenure_months,
-    CASE job_level
+    CASE position_level
         WHEN 'C-Team' THEN 4
         WHEN 'Manager' THEN 3
         WHEN 'Staff' THEN 2

@@ -302,7 +302,7 @@ def create_features(df):
     
     # Select final feature columns
     feature_cols = [
-        'pid', 'tenure_months', 'job_level_encoded', 'job_seniority_score',
+        'id', 'tenure_months', 'position_level_encoded', 'job_seniority_score',
         'compensation_encoded', 'company_size_encoded', 'linkedin_activity_score',
         'days_since_profile_update', 'social_media_presence_score', 
         'email_engagement_score', 'industry_typical_age', 'job_function_encoded',

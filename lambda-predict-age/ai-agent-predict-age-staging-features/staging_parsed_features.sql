@@ -4,34 +4,34 @@
 -- NOTE: Replace ${S3_BUCKET} with your actual S3 bucket name before execution
 -- This SQL file is used by Lambda functions which will substitute the bucket name from environment variables
 
-CREATE TABLE ${DATABASE_NAME}.predict_age_staging_parsed_features_2025q3
+CREATE TABLE ${DATABASE_NAME}.predict_age_staging_parsed_features_${YYYYQQ}
 WITH (
     format = 'PARQUET',
     parquet_compression = 'SNAPPY',
-    external_location = 's3://${S3_BUCKET}/predict-age/predict_age_staging_parsed_features_2025q3/'
+    external_location = 's3://${S3_BUCKET}/predict-age/predict_age_staging_parsed_features_${YYYYQQ}/'
 ) AS
 SELECT
-    pid,
+    id,
 
     -- Original fields (pass through)
-    job_title,
-    job_level,
-    job_function,
-    org_name,
-    employee_range,
-    revenue_range,
-    industry,
-    linkedin_connection_count,
-    linkedin_url_is_valid,
+    position_title,
+    position_level,
+    position_function,
+    organization_name,
+    organization_size_range,
+    organization_revenue_range,
+    organization_industry,
+    professional_network_connection_count,
+    professional_network_url_is_valid,
     work_email,
     personal_email,
-    job_start_date,
-    ev_last_date,
+    position_start_date,
+    employment_end_date,
     compensation_range,
     birth_year,
     approximate_age,
-    facebook_url,
-    twitter_url,
+    social_media_url_1,
+    social_media_url_2,
 
     -- PARSED: Education level from JSON (simplified: search entire string)
     CASE
@@ -80,5 +80,5 @@ SELECT
     )) as earliest_work_start_year
 
 FROM ${SOURCE_DATABASE}.${SOURCE_TABLE}
-WHERE pid IS NOT NULL;
+WHERE id IS NOT NULL;
 

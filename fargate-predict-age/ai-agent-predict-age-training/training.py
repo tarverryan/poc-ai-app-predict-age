@@ -101,7 +101,7 @@ def load_training_data():
         # Join features with targets
         query = f"""
         SELECT 
-            f.pid,
+            f.id,
             f.tenure_months,
             f.job_level_encoded,
             f.job_seniority_score,
@@ -126,7 +126,7 @@ def load_training_data():
             t.actual_age
         FROM {DATABASE_NAME}.{features_table} f
         JOIN {DATABASE_NAME}.{targets_table} t
-        ON f.pid = t.pid
+        ON f.id = t.id
         WHERE t.actual_age IS NOT NULL
         LIMIT 1000000
         """

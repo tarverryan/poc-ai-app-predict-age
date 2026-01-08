@@ -14,6 +14,7 @@ ecr_client = boto3.client('ecr')
 DATABASE_NAME = os.environ['DATABASE_NAME']
 S3_BUCKET = os.environ['S3_BUCKET']
 CLUSTER_NAME = os.environ['CLUSTER_NAME']
+YYYYQQ = os.environ.get('YYYYQQ', 'YYYYQQ')
 
 def lambda_handler(event, context):
     """
@@ -161,7 +162,7 @@ def verify_final_results_count():
     try:
         query = f"""
         SELECT COUNT(*) as record_count 
-        FROM {DATABASE_NAME}.predict_age_final_results_2025q3
+        FROM {DATABASE_NAME}.predict_age_final_results_{YYYYQQ}
         """
         
         response = athena_client.start_query_execution(

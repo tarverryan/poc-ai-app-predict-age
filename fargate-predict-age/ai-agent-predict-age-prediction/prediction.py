@@ -277,7 +277,7 @@ def create_features_from_raw(df_raw):
     elapsed = time.time() - start_time
     logger.info(f"✅ Feature creation completed in {elapsed:.2f}s ({len(df)/elapsed:.0f} rows/sec)")
     
-    return df[['pid'] + feature_cols]
+    return df[['id'] + feature_cols]
 
 def load_models_from_s3():
     """Load trained models from S3"""
@@ -305,9 +305,9 @@ def load_raw_data_for_batch():
     query = f"""
     SELECT *
     FROM {DATABASE_NAME}.{RAW_TABLE}
-    WHERE pid IS NOT NULL
+    WHERE id IS NOT NULL
     AND (birth_year IS NULL AND approximate_age IS NULL)
-    AND MOD(CAST(pid AS BIGINT), {TOTAL_BATCHES}) = {BATCH_ID}
+    AND MOD(CAST(id AS BIGINT), {TOTAL_BATCHES}) = {BATCH_ID}
     """
     
     # Execute query
@@ -380,7 +380,7 @@ def main():
         
         # 4. Make predictions
         logger.info("Making predictions...")
-        X = df_features.drop('pid', axis=1).values
+        X = df_features.drop('id', axis=1).values
         
         predictions = model_xgb.predict(X)
         pred_lower = model_quantile['lower'].predict(X)
@@ -389,7 +389,7 @@ def main():
         
         # 5. Prepare results
         df_results = pd.DataFrame({
-            'pid': df_features['pid'],
+            'id': df_features['id'],
             'predicted_age': np.clip(np.round(predictions), 18, 75).astype(int),
             'confidence_score': np.round(confidence_scores, 2),
             'prediction_ts': datetime.now().isoformat(),

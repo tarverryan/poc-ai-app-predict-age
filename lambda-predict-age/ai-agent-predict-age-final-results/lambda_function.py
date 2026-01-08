@@ -16,7 +16,8 @@ s3_client = boto3.client('s3')
 # Configuration
 DATABASE_NAME = os.environ.get('DATABASE_NAME', 'ml_predict_age')
 S3_BUCKET = os.environ.get('S3_BUCKET')
-FINAL_RESULTS_TABLE = 'predict_age_final_results_2025q3'
+YYYYQQ = os.environ.get('YYYYQQ', 'YYYYQQ')
+FINAL_RESULTS_TABLE = f'predict_age_final_results_{YYYYQQ}'
 
 if not S3_BUCKET:
     raise ValueError("S3_BUCKET environment variable is required")
@@ -105,7 +106,7 @@ def lambda_handler(event, context):
             parquet_compression = 'SNAPPY'
         ) AS
         SELECT 
-            s.pid,
+            s.id,
             COALESCE(
                 CAST(s.approximate_age AS INTEGER),          -- Priority 1: Existing approximate_age
                 (2025 - CAST(s.birth_year AS INTEGER)),      -- Priority 2: Calculate from birth_year
@@ -115,7 +116,7 @@ def lambda_handler(event, context):
             CASE 
                 WHEN s.birth_year IS NOT NULL THEN 100.0         -- Existing birth year (CERTAIN - real data)
                 WHEN s.approximate_age IS NOT NULL THEN 100.0    -- Existing approximate age (CERTAIN - real data)
-                WHEN pred.pid IS NOT NULL THEN pred.confidence_score  -- ML prediction confidence (varies)
+                WHEN pred.id IS NOT NULL THEN pred.confidence_score  -- ML prediction confidence (varies)
                 ELSE 15.0                                        -- Default for missing data
             END as confidence_score,
             CAST(current_timestamp AS VARCHAR) as qa_timestamp,
@@ -128,27 +129,27 @@ def lambda_handler(event, context):
                 END
             ) as model_version,
             CASE 
-                WHEN pred.pid IS NOT NULL THEN pred.prediction_status  -- ML prediction status
+                WHEN pred.id IS NOT NULL THEN pred.prediction_status  -- ML prediction status
                 WHEN s.approximate_age IS NOT NULL OR s.birth_year IS NOT NULL THEN 'EXISTING_AGE'
                 ELSE 'INSUFFICIENT_DATA'
             END as prediction_status,
             CASE
                 WHEN s.approximate_age IS NOT NULL THEN 'EXISTING_APPROX_AGE'
                 WHEN s.birth_year IS NOT NULL THEN 'EXISTING_BIRTH_YEAR'
-                WHEN pred.pid IS NOT NULL THEN 'ML_PREDICTION'
+                WHEN pred.id IS NOT NULL THEN 'ML_PREDICTION'
                 ELSE 'DEFAULT_RULE'
             END as prediction_source
         FROM (
-            -- All PIDs from source table with existing age data
+            -- All IDs from source table with existing age data
             SELECT 
-                CAST(pid AS BIGINT) as pid,
+                CAST(id AS BIGINT) as id,
                 birth_year,
                 approximate_age
             FROM {source_table}
-            WHERE pid IS NOT NULL
+            WHERE id IS NOT NULL
         ) s
-        LEFT JOIN {DATABASE_NAME}.predict_age_human_qa_2025q3 pred
-        ON s.pid = pred.pid
+        LEFT JOIN {DATABASE_NAME}.predict_age_human_qa_{YYYYQQ} pred
+        ON s.id = pred.id
         """
         
         execution_id = execute_athena_query(query, f"Creating final results table with defaults")

@@ -1,5 +1,5 @@
 -- Training Targets: Actual ages for model training
--- Training set: 10% sample (MOD(pid, 10) = 0) = ~14M records
+-- Training set: 10% sample (MOD(id, 10) = 0) = ~14M records
 -- Target: actual_age (integer, 18-75 years)
 -- NOTE: Replace ${S3_BUCKET} with your actual S3 bucket name before execution
 -- This SQL file is used by Lambda functions which will substitute the bucket name from environment variables
@@ -12,7 +12,7 @@ WITH (
 ) AS
 WITH known_ages AS (
     SELECT 
-        pid,
+        id,
         -- Prefer birth_year (more accurate), fallback to approximate_age
         CASE 
             WHEN birth_year IS NOT NULL AND CAST(birth_year AS INT) BETWEEN 1930 AND 2007 
@@ -24,9 +24,9 @@ WITH known_ages AS (
         birth_year,
         approximate_age
     FROM ${SOURCE_DATABASE}.${SOURCE_TABLE}
-    WHERE pid IS NOT NULL
+    WHERE id IS NOT NULL
       AND (birth_year IS NOT NULL OR approximate_age IS NOT NULL)
-      AND MOD(CAST(pid AS BIGINT), 10) = 0  -- 10% sample (matches training features)
+      AND MOD(CAST(id AS BIGINT), 10) = 0  -- 10% sample (matches training features)
 )
 SELECT 
     pid,

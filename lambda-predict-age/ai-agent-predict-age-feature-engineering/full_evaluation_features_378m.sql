@@ -7,27 +7,27 @@ WITH (
     external_location = 's3://${S3_BUCKET}/predict-age/predict_age_full_evaluation_features_378m/'
 ) AS
 SELECT
-    pid,
-    CAST(MOD(CAST(pid AS BIGINT), 898) AS BIGINT) as batch_id,
+    id,
+    CAST(MOD(CAST(id AS BIGINT), 898) AS BIGINT) as batch_id,
     CASE 
-        WHEN job_start_date IS NOT NULL AND TRY_CAST(job_start_date AS DATE) IS NOT NULL THEN
-            date_diff('month', TRY_CAST(job_start_date AS DATE), current_date)
-        WHEN job_level = 'C-Team' THEN 120
-        WHEN job_level = 'Manager' THEN 60
+        WHEN position_start_date IS NOT NULL AND TRY_CAST(position_start_date AS DATE) IS NOT NULL THEN
+            date_diff('month', TRY_CAST(position_start_date AS DATE), current_date)
+        WHEN position_level = 'C-Team' THEN 120
+        WHEN position_level = 'Manager' THEN 60
         ELSE 36
     END as tenure_months,
-    CASE job_level
+    CASE position_level
         WHEN 'C-Team' THEN 4
         WHEN 'Manager' THEN 3
         WHEN 'Staff' THEN 2
         ELSE 1
     END as job_level_encoded,
     CASE 
-        WHEN LOWER(job_title) LIKE '%chief%' OR LOWER(job_title) LIKE '%vp%' THEN 5
-        WHEN LOWER(job_title) LIKE '%senior%' OR LOWER(job_title) LIKE '%principal%' THEN 4
-        WHEN LOWER(job_title) LIKE '%manager%' OR LOWER(job_title) LIKE '%director%' THEN 3
-        WHEN LOWER(job_title) LIKE '%associate%' OR LOWER(job_title) LIKE '%analyst%' THEN 2
-        WHEN LOWER(job_title) LIKE '%junior%' OR LOWER(job_title) LIKE '%entry%' THEN 1
+        WHEN LOWER(position_title) LIKE '%chief%' OR LOWER(position_title) LIKE '%vp%' THEN 5
+        WHEN LOWER(position_title) LIKE '%senior%' OR LOWER(position_title) LIKE '%principal%' THEN 4
+        WHEN LOWER(position_title) LIKE '%manager%' OR LOWER(position_title) LIKE '%director%' THEN 3
+        WHEN LOWER(position_title) LIKE '%associate%' OR LOWER(position_title) LIKE '%analyst%' THEN 2
+        WHEN LOWER(position_title) LIKE '%junior%' OR LOWER(position_title) LIKE '%entry%' THEN 1
         ELSE 3
     END as job_seniority_score,
     CASE compensation_range
@@ -39,7 +39,7 @@ SELECT
         WHEN '$25,001 - $50,000' THEN 3
         ELSE 4
     END as compensation_encoded,
-    CASE CAST(employee_range AS VARCHAR)
+    CASE CAST(organization_size_range AS VARCHAR)
         WHEN '10000+' THEN 9
         WHEN '5000 to 9999' THEN 8
         WHEN '1000 to 4999' THEN 7
@@ -48,16 +48,16 @@ SELECT
         ELSE 4
     END as company_size_encoded,
     CASE 
-        WHEN linkedin_connection_count IS NOT NULL AND CAST(COALESCE(NULLIF(REGEXP_REPLACE(linkedin_connection_count, '[^0-9]', ''), ''), '0') AS INT) > 500 THEN 1.0
-        WHEN linkedin_connection_count IS NOT NULL AND CAST(COALESCE(NULLIF(REGEXP_REPLACE(linkedin_connection_count, '[^0-9]', ''), ''), '0') AS INT) > 200 THEN 0.8
-        WHEN linkedin_connection_count IS NOT NULL AND CAST(COALESCE(NULLIF(REGEXP_REPLACE(linkedin_connection_count, '[^0-9]', ''), ''), '0') AS INT) > 100 THEN 0.6
+        WHEN professional_network_connection_count IS NOT NULL AND CAST(COALESCE(NULLIF(REGEXP_REPLACE(professional_network_connection_count, '[^0-9]', ''), ''), '0') AS INT) > 500 THEN 1.0
+        WHEN professional_network_connection_count IS NOT NULL AND CAST(COALESCE(NULLIF(REGEXP_REPLACE(professional_network_connection_count, '[^0-9]', ''), ''), '0') AS INT) > 200 THEN 0.8
+        WHEN professional_network_connection_count IS NOT NULL AND CAST(COALESCE(NULLIF(REGEXP_REPLACE(professional_network_connection_count, '[^0-9]', ''), ''), '0') AS INT) > 100 THEN 0.6
         ELSE 0.3
     END as linkedin_activity_score,
-    COALESCE(date_diff('day', TRY_CAST(ev_last_date AS DATE), current_date), 365) as days_since_profile_update,
+    COALESCE(date_diff('day', TRY_CAST(employment_end_date AS DATE), current_date), 365) as days_since_profile_update,
     CASE 
-        WHEN linkedin_url_is_valid = true AND facebook_url IS NOT NULL AND twitter_url IS NOT NULL THEN 1.0
-        WHEN linkedin_url_is_valid = true AND (facebook_url IS NOT NULL OR twitter_url IS NOT NULL) THEN 0.7
-        WHEN linkedin_url_is_valid = true THEN 0.5
+        WHEN professional_network_url_is_valid = true AND social_media_url_1 IS NOT NULL AND social_media_url_2 IS NOT NULL THEN 1.0
+        WHEN professional_network_url_is_valid = true AND (social_media_url_1 IS NOT NULL OR social_media_url_2 IS NOT NULL) THEN 0.7
+        WHEN professional_network_url_is_valid = true THEN 0.5
         ELSE 0.2
     END as social_media_presence_score,
     CASE 
@@ -167,5 +167,5 @@ SELECT
     END) as comp_size_interaction,
     current_date as feature_creation_date,
     'v1.0_21_features_with_json_parsing' as feature_version
-FROM ${DATABASE_NAME}.predict_age_staging_parsed_features_2025q3
-WHERE pid IS NOT NULL
+FROM ${DATABASE_NAME}.predict_age_staging_parsed_features_${YYYYQQ}
+WHERE id IS NOT NULL

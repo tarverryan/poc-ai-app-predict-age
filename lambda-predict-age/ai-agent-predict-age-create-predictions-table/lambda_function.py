@@ -14,7 +14,7 @@ athena_client = boto3.client('athena')
 import os
 
 DATABASE_NAME = os.environ.get('DATABASE_NAME', 'ml_predict_age')
-PREDICTIONS_TABLE_NAME = 'predict_age_predictions_2025q3'
+PREDICTIONS_TABLE_NAME = f'predict_age_predictions_{os.environ.get("YYYYQQ", "YYYYQQ")}'
 S3_BUCKET = os.environ.get('S3_BUCKET')
 if not S3_BUCKET:
     raise ValueError("S3_BUCKET environment variable is required")
@@ -76,10 +76,10 @@ def lambda_handler(event, context):
         logger.info(f"Existing table dropped (if it existed)")
         
         # Create table with Parquet format (updated from JSONL)
-        # Schema matches actual Parquet files: pid (bigint), predicted_age (int), confidence_score (double), etc.
+        # Schema matches actual Parquet files: id (bigint), predicted_age (int), confidence_score (double), etc.
         create_query = f"""
         CREATE EXTERNAL TABLE {DATABASE_NAME}.{PREDICTIONS_TABLE_NAME} (
-            pid bigint,
+            id bigint,
             predicted_age int,
             confidence_score double,
             prediction_ts string,
