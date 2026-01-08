@@ -2,6 +2,9 @@
 
 A learning-focused proof-of-concept demonstrating batch ML orchestration patterns using AWS serverless and container services. This reference implementation shows how to build scalable ML pipelines with Step Functions, Fargate, Lambda, and Athena.
 
+**New to the project?**  
+Start with *Why This Project Exists* and *AWS Architecture Overview* for a high-level understanding, then explore design decisions and lessons learned.
+
 [Documentation](docs/) | [Architecture](docs/architecture.md) | [Lessons Learned](docs/lessons-learned.md) | [Author](AUTHOR.md)
 
 ## Why This Project Exists
@@ -28,16 +31,18 @@ This project is designed for builders who want to learn:
 
 ## What Is This?
 
-A fully automated ML pipeline that demonstrates:
+An example ML pipeline that demonstrates:
 
 - **Batch ML orchestration** – End-to-end workflow from data staging to predictions
 - **Feature engineering** – Extracting and transforming features from raw data
 - **Model training** – Training regression models (Ridge, XGBoost) on labeled data
 - **Parallel prediction** – Distributed batch prediction using Step Functions Map state
 - **Confidence scoring** – Providing uncertainty estimates alongside predictions
-- **Infrastructure as Code** – Complete Terraform configuration for all AWS resources
+- **Infrastructure as Code** – Terraform configuration for AWS resources
 
 ## AWS Architecture Overview
+
+The diagram below represents the full reference architecture; individual components can be studied independently.
 
 ```mermaid
 graph TB
@@ -62,7 +67,7 @@ graph TB
 
 ### AWS Services Used
 
-- **AWS Step Functions** – Orchestrates the entire pipeline with error handling and retries
+- **AWS Step Functions** – Orchestrates pipeline stages with error handling and retries
 - **AWS Lambda** – Event-driven functions for data preparation, orchestration, and cleanup
 - **AWS Fargate** – Serverless containers for ML training and batch prediction
 - **Amazon Athena** – Serverless SQL queries on S3 data for feature engineering
@@ -123,6 +128,8 @@ graph TB
 - **Trade-off:** Higher cost but significantly better availability and reliability
 - **Alternative Tested:** ARM64 (rejected due to capacity constraints at scale)
 
+The sections below provide deeper context for builders who want to understand service-level decisions and trade-offs in more detail.
+
 ## AWS Services Deep Dive
 
 ### AWS Step Functions
@@ -177,7 +184,7 @@ graph TB
 - **Learning:** Best practices for IAM roles, policies, and cross-service permissions
 
 ### Amazon CloudWatch
-- **Why:** Logging, monitoring, and alerting for the entire pipeline
+- **Why:** Logging, monitoring, and alerting for the pipeline
 - **Key Feature:** Log groups for Lambda and Fargate, cost alarms
 - **Learning:** Setting up cost alarms and monitoring for batch ML pipelines
 
